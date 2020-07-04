@@ -1,4 +1,5 @@
 import React, {Component, Fragment} from 'react'
+import TodoItem from './TodoItem'
 
 class TodoList extends Component {
   constructor(props) {  //组件构造函数
@@ -7,6 +8,9 @@ class TodoList extends Component {
       inputValue: 'hello',
       list: []
     }
+    this.changeInputValue = this.changeInputValue.bind(this)
+    this.submitInput = this.submitInput.bind(this)
+    this.itemDel = this.itemDel.bind(this)
   }
 
   render() {           // 组件的html --- JSX
@@ -15,48 +19,51 @@ class TodoList extends Component {
         <div>
           <label htmlFor="insert">输入内容</label> 
           <input value = {this.state.inputValue}   
-                 onChange = {this.changeInputValue.bind(this)} 
+                 onChange = {this.changeInputValue} 
                  id="insert" />
-          <button onClick = {this.submitInput.bind(this)}>提交</button>
+          <button onClick = {this.submitInput}>提交</button>
         </div>
         <ul>
-            {
-              this.state.list.map((item, index) => {  
-                return (
-                <Fragment  key={index}>  
-                <li key={index} 
-                    dangerouslySetInnerHTML={{__html: item}}></li>
-                <button onClick = {this.itemDel.bind(this, index)} key={index+1}>删除</button>
-                </Fragment>
-                )
-              })
-            }
+            { this.getTodoItem() }
         </ul>
       </Fragment>
     )
   }
 
-  changeInputValue(e){
-    this.setState({                   // 修改Reat组件中的数据 需要通过this.setState({})函数来修改
-      inputValue: e.target.value
+  getTodoItem() {
+    return this.state.list.map((item, index) => {  
+      return ( 
+      <TodoItem key={index}
+                content = {item}
+                index = {index}
+                itemDel = {this.itemDel}/>
+      )
     })
+  }
+
+  changeInputValue(e){
+    const value = e.target.value
+    this.setState(() => ({
+        inputValue: value
+      }))
   }
 
   submitInput(){
-    if(this.state.inputValue === ''){
+    const {inputValue} = this.state
+    if(inputValue === ''){
       return 
     }
-    this.setState({
-      list: [...this.state.list, this.state.inputValue],
+    this.setState((prevState) => ({
+      list: [...prevState.list, prevState.inputValue],
       inputValue: ''
-    })
+    }))
   }
 
   itemDel(index){
-    const list = [...this.state.list]
-    list.splice(index, 1)
-    this.setState({
-      list
+    this.setState((prevState) => {
+      const list = [...prevState.list]
+      list.splice(index, 1)
+      return {list}
     })
   }
 }
