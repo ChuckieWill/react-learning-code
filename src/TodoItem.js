@@ -7,11 +7,19 @@ class TodoItem extends Component {
     this.itemDel = this.itemDel.bind(this)
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    if(nextProps.content !== this.props.content){
+      return true
+    }else{
+      return false
+    }
+  }
+
   render() {
-    const { content, text } = this.props 
+    console.log('hhhhhh')
+    const { content } = this.props 
     return (
-      <div>
-        {text}-{content}
+      <div>{content}
         <button onClick = {this.itemDel} >删除</button>
       </div>
     )
@@ -24,14 +32,13 @@ class TodoItem extends Component {
 }
 
 TodoItem.propTypes = {
-  text : PropTypes.string.isRequired,
   content : PropTypes.string,
   itemDel : PropTypes.func,
   index : PropTypes.number
 }
 
-TodoItem.defaultProps = {
-  text: 'hello word'
-}
+// TodoItem.defaultProps = {
+//   text: 'hello word'
+// }
 
 export default TodoItem
