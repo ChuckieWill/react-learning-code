@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react'
 import { Input, Button, List } from 'antd'
 import store from './store/index'
+import {getInputChangeAction, getAddItemAction, getDelItemAction} from './store/actionCreators'
 
 import './TodoList.css'
 import 'antd/dist/antd.css'
@@ -10,7 +11,9 @@ class TodoList extends Component {
     super(props)        //父组件：Component的构造函
     this.changeInputValue = this.changeInputValue.bind(this)  //监听输入框的修改
     this.submitInput = this.submitInput.bind(this)  // 提交修改
+    this.handleStoreChange = this.handleStoreChange.bind(this)  // 实时获取store中的数据
     this.state = store.getState()
+    store.subscribe(this.handleStoreChange)
   }
 
   // componentDidMount() {
@@ -36,7 +39,7 @@ class TodoList extends Component {
             <List
               bordered
               dataSource={this.state.list}
-              renderItem={item => <List.Item>{item}</List.Item>}
+              renderItem={(item, index) =>  <List.Item onClick = {this.onDel.bind(this, index)}>{item}</List.Item>  }
             />
           </div>
         </div> 
@@ -46,25 +49,23 @@ class TodoList extends Component {
 
   changeInputValue(e){
     // const value = this.input.value
-    console.log(e.target.value)
-    const action = {
-      type: 'change_input_value',
-      value: e.target.value
-    }
+    const action = getInputChangeAction(e.target.value)
+    store.dispatch(action)
   }
 
   submitInput(){
-    const {inputValue} = this.state
-    if(inputValue === ''){
-      return 
-    }
-    this.setState((prevState) => ({
-      list: [...prevState.list, prevState.inputValue],
-      inputValue: ''
-    }))
+    const action = getAddItemAction()
+    store.dispatch(action)
   }
 
+  handleStoreChange() {
+    this.setState(store.getState())
+  }
 
+  onDel(index) {
+    const action = getDelItemAction(index)
+    store.dispatch(action)
+  }
 }
 
 export default TodoList;
