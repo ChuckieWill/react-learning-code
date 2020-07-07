@@ -1,8 +1,8 @@
-import React, {Component, Fragment} from 'react'
-import { Input, Button, List } from 'antd'
+import React, {Component} from 'react'
 import store from './store/index'
+import axios from 'axios'
 import {getInputChangeAction, getAddItemAction, getDelItemAction} from './store/actionCreators'
-
+import TodoListUI from './TodoListUI'
 import './TodoList.css'
 import 'antd/dist/antd.css'
 
@@ -12,6 +12,7 @@ class TodoList extends Component {
     this.changeInputValue = this.changeInputValue.bind(this)  //监听输入框的修改
     this.submitInput = this.submitInput.bind(this)  // 提交修改
     this.handleStoreChange = this.handleStoreChange.bind(this)  // 实时获取store中的数据
+    this.onDel = this.onDel.bind(this)
     this.state = store.getState()
     store.subscribe(this.handleStoreChange)
   }
@@ -28,23 +29,19 @@ class TodoList extends Component {
 
   render() {           // 组件的html --- JSX
     return (           // React组件的标签必须有一个根标签，可以是<div>,但是<div>会在DOM中渲染出来，为了不渲染，用<Fragment>来占位，起到跟标签的作用
-      <Fragment> 
-        <div style={{margin: '10px'}}>
-          <Input placeholder="Todo List" 
-                  style={{width: '300px', marginRight: '10px'}}
-                  value = {this.state.inputValue}
-                  onChange = {this.changeInputValue}/>
-          <Button type="primary" onClick = {this.submitInput}>提交</Button>
-          <div style={{margin: '10px 10px 10px 0 ', width: '370px'}}>
-            <List
-              bordered
-              dataSource={this.state.list}
-              renderItem={(item, index) =>  <List.Item onClick = {this.onDel.bind(this, index)}>{item}</List.Item>  }
-            />
-          </div>
-        </div> 
-      </Fragment>
+      <TodoListUI
+        inputValue = {this.state.inputValue}
+        changeInputValue = {this.changeInputValue}
+        submitInput = {this.submitInput}
+        list = {this.state.list}
+        onDel = {this.onDel}/>
     )
+  }
+
+  componentDidMount() {
+    axios.get('http://152.136.185.210:8000/api/n3/home/multidata').then((res) => {
+      console.log(res)
+    })
   }
 
   changeInputValue(e){
