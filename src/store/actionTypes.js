@@ -1,3 +1,5 @@
 export const CHANGE_INPUT_VALUE = 'change_input_value'
 export const ADD_TO_LIST = 'add_to_list'
 export const DEL_LIST = 'del_list'
+export const ADD_TO_LISTUP = 'add_to_listup'
+export const GET_TODOLIST = 'get_todolist'
